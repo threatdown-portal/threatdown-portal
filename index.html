@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ThreatDown License Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b0e14;--surface:#111620;--surface2:#181e2d;--border:#1e2a40;--accent:#00c2ff;--accent2:#0076ff;--success:#00e5a0;--danger:#ff4f6b;--text:#e8eef8;--muted:#5a6a85;--label:#8a9ab8}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,194,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,194,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,118,255,0.08) 0%,transparent 70%);top:-200px;left:-100px;pointer-events:none;z-index:0}
+.glow2{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,194,255,0.06) 0%,transparent 70%);bottom:-150px;right:-100px;pointer-events:none;z-index:0}
+.container{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:40px 20px 80px}
+.header{display:flex;align-items:center;gap:16px;margin-bottom:36px;animation:fadeDown 0.6s ease both}
+.logo-badge{width:48px;height:48px;background:linear-gradient(135deg,var(--accent2),var(--accent));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 24px rgba(0,194,255,0.3);flex-shrink:0}
+.header-text h1{font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-text p{font-size:0.8rem;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.meta-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:28px;animation:fadeUp 0.5s 0.05s ease both}
+.status-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-family:'DM Mono',monospace;font-size:0.7rem;cursor:pointer;transition:border-color 0.2s}
+.status-pill:hover{border-color:var(--accent)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background 0.3s}
+.status-dot.ok{background:var(--success);box-shadow:0 0 6px var(--success)}
+.status-dot.err{background:var(--danger);box-shadow:0 0 6px var(--danger)}
+.status-dot.checking{animation:blink 1s infinite;background:var(--accent)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.secure-badge{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--success);background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.2);border-radius:6px;padding:5px 10px}
+.cf-badge{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:0.68rem;color:#f6821f;background:rgba(246,130,31,0.07);border:1px solid rgba(246,130,31,0.2);border-radius:6px;padding:5px 10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;animation:fadeUp 0.6s 0.1s ease both;transition:border-color 0.2s}
+.card:hover{border-color:rgba(0,194,255,0.15)}
+.card-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.14em;color:var(--accent);font-family:'DM Mono',monospace;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.card-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);display:inline-block}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-size:0.7rem;color:var(--label);font-family:'DM Mono',monospace;letter-spacing:0.08em;text-transform:uppercase}
+input,select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:0.85rem;padding:10px 14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,194,255,0.08)}
+select option{background:var(--surface2)}
+.prefix-wrap{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s}
+.prefix-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,194,255,0.08)}
+.prefix-wrap .pfx{padding:10px 10px 10px 14px;color:var(--muted);font-family:'DM Mono',monospace;font-size:0.85rem;border-right:1px solid var(--border);white-space:nowrap}
+.prefix-wrap input{border:none;border-radius:0;box-shadow:none}
+.prefix-wrap input:focus{box-shadow:none}
+.section-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px}
+.stab{padding:9px 20px;font-size:0.7rem;font-family:'DM Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s}
+.stab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.product-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all 0.2s;position:relative}
+.product-card:hover{border-color:rgba(0,194,255,0.3)}
+.product-card.selected{border-color:var(--accent);background:rgba(0,194,255,0.06);box-shadow:0 0 16px rgba(0,194,255,0.08)}
+.product-name{font-size:0.82rem;font-weight:700;margin-bottom:4px}
+.product-desc{font-size:0.7rem;color:var(--muted);margin-bottom:8px}
+.product-code{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted)}
+.product-check{position:absolute;top:12px;right:12px;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;transition:all 0.2s}
+.product-card.selected .product-check{background:var(--accent);border-color:var(--accent);color:#000}
+.os-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.os-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px 16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px}
+.os-card:hover{border-color:rgba(0,194,255,0.3)}
+.os-card.selected{border-color:var(--accent);background:rgba(0,194,255,0.06)}
+.os-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.os-win .os-icon{background:rgba(0,120,212,0.15)}
+.os-mac .os-icon{background:rgba(120,120,120,0.15)}
+.os-name{font-size:0.84rem;font-weight:700}
+.os-sub{font-size:0.68rem;color:var(--muted);margin-top:2px}
+.os-radio{width:14px;height:14px;border-radius:50%;border:1px solid var(--border);margin-left:auto;flex-shrink:0;transition:all 0.2s}
+.os-card.selected .os-radio{background:var(--accent);border-color:var(--accent)}
+.cost-summary{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-top:4px;display:flex;align-items:center;justify-content:space-between}
+.cost-label{font-size:0.68rem;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.08em}
+.cost-sub{font-size:0.66rem;color:var(--muted);font-family:'DM Mono',monospace;margin-top:3px}
+.cost-value{font-size:1.3rem;font-weight:800;color:var(--accent);font-family:'DM Mono',monospace}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border-radius:10px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.02em;transition:all 0.2s}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;width:100%;box-shadow:0 4px 20px rgba(0,194,255,0.25)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 30px rgba(0,194,255,0.35)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-download{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;width:100%;box-shadow:0 4px 20px rgba(0,194,255,0.2);border-radius:10px;padding:13px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;text-decoration:none}
+.btn-sm{padding:6px 12px;font-size:0.72rem;background:var(--surface2);color:var(--label);border:1px solid var(--border);border-radius:6px;white-space:nowrap}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;display:none}
+.result-panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeUp 0.4s ease both;margin-top:20px}
+.result-panel.visible{display:block}
+.result-header{padding:18px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.result-header.success{background:rgba(0,229,160,0.06)}
+.result-header.error{background:rgba(255,79,107,0.06)}
+.result-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.result-header.success .result-icon{background:rgba(0,229,160,0.15)}
+.result-header.error .result-icon{background:rgba(255,79,107,0.15)}
+.result-title{font-size:0.95rem;font-weight:700}
+.result-header.success .result-title{color:var(--success)}
+.result-header.error .result-title{color:var(--danger)}
+.result-body{padding:24px}
+.license-table{width:100%;border-collapse:collapse}
+.license-table tr{border-bottom:1px solid var(--border)}
+.license-table tr:last-child{border-bottom:none}
+.license-table td{padding:10px 4px;font-size:0.82rem}
+.license-table td:first-child{font-family:'DM Mono',monospace;color:var(--label);width:180px;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em}
+.license-table td:last-child{font-family:'DM Mono',monospace;color:var(--text)}
+.tag-success{display:inline-block;background:rgba(0,229,160,0.12);color:var(--success);font-family:'DM Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:4px;letter-spacing:0.08em}
+.tag-win{display:inline-block;background:rgba(0,120,212,0.12);color:#5aabff;font-family:'DM Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:4px;letter-spacing:0.08em}
+.tag-mac{display:inline-block;background:rgba(160,160,160,0.12);color:#aaa;font-family:'DM Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:4px;letter-spacing:0.08em}
+.total-cost{color:var(--accent);font-weight:700;font-size:1rem}
+.error-msg{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--danger);background:rgba(255,79,107,0.06);border:1px solid rgba(255,79,107,0.2);border-radius:8px;padding:14px 16px;white-space:pre-wrap;word-break:break-word}
+.log-area{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);margin-top:16px;line-height:1.8;max-height:160px;overflow-y:auto}
+.log-line{display:flex;gap:10px}
+.log-line .ts{color:var(--accent2);opacity:0.7}
+.log-line .ok{color:var(--success)}
+.log-line .err{color:var(--danger)}
+.log-line .info{color:var(--accent)}
+.toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.4);transform:translateY(80px);opacity:0;transition:all 0.3s ease;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="glow2"></div>
+<div class="container">
+
+  <div class="header">
+    <div class="logo-badge">🛡️</div>
+    <div class="header-text">
+      <h1>ThreatDown License Portal</h1>
+      <p>OneView API — Order &amp; License Generation</p>
+    </div>
+  </div>
+
+  <div class="meta-row">
+    <div class="status-pill" onclick="checkHealth()" title="Click to recheck">
+      <div class="status-dot checking" id="statusDot"></div>
+      <span id="statusText">Checking API…</span>
+    </div>
+    <div class="secure-badge">🔒 Credentials in Cloudflare Secrets</div>
+    <div class="cf-badge">⚡ Cloudflare Worker → Oracle Static IP</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Customer Details</div>
+    <div class="form-row">
+      <div class="field"><label>Site / Company Name</label><input type="text" id="siteName" placeholder="Acme Corp"/></div>
+      <div class="field"><label>Contact Name</label><input type="text" id="contactName" placeholder="John Doe"/></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Contact Email</label><input type="email" id="contactEmail" placeholder="john@acme.com"/></div>
+      <div class="field"><label>Phone (optional)</label><input type="text" id="contactPhone" placeholder="+1 555 000 0000"/></div>
+    </div>
+    <div class="form-row" style="margin-bottom:0">
+      <div class="field"><label>Primary Nerd on the Account</label><input type="text" id="nerdName" placeholder="Jane Smith"/></div>
+      <div class="field"><label>Nerd Email</label><input type="email" id="nerdEmail" placeholder="jane@acme.com"/></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Product &amp; OS Configuration</div>
+    <div class="section-tabs">
+      <div class="stab active" onclick="switchTab('product')">Select Product</div>
+      <div class="stab" onclick="switchTab('os')">OS Type</div>
+    </div>
+    <div class="tab-panel active" id="tab-product">
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+    <div class="tab-panel" id="tab-os">
+      <div class="os-grid">
+        <div class="os-card os-win selected" id="os-windows" onclick="selectOS('windows')">
+          <div class="os-icon">🪟</div>
+          <div><div class="os-name">Windows</div><div class="os-sub">Windows 10 / 11 / Server</div></div>
+          <div class="os-radio"></div>
+        </div>
+        <div class="os-card os-mac" id="os-macos" onclick="selectOS('macos')">
+          <div class="os-icon">🍎</div>
+          <div><div class="os-name">macOS</div><div class="os-sub">macOS 12 Monterey and above</div></div>
+          <div class="os-radio"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Subscription Details</div>
+    <div class="form-row">
+      <div class="field">
+        <label>Number of Endpoints</label>
+        <input type="number" id="endpoints" value="10" min="1" oninput="updateCost()"/>
+      </div>
+      <div class="field">
+        <label>Price per Endpoint</label>
+        <div class="prefix-wrap">
+          <span class="pfx">$</span>
+          <input type="number" id="pricePerEndpoint" value="5.00" min="0" step="0.01" oninput="updateCost()"/>
+        </div>
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:8px">
+      <div class="field"><label>Start Date</label><input type="date" id="startDate"/></div>
+      <div class="field"><label>PO / Reference # (optional)</label><input type="text" id="poNumber" placeholder="PO-2024-001"/></div>
+    </div>
+    <div class="cost-summary">
+      <div>
+        <div class="cost-label">Total Cost</div>
+        <div class="cost-sub" id="costSub">10 endpoints × $5.00</div>
+      </div>
+      <div class="cost-value" id="costTotal">$50.00</div>
+    </div>
+    <hr class="divider"/>
+    <button class="btn btn-primary" id="submitBtn" onclick="placeOrder()">
+      <span class="spinner" id="spinner"></span>
+      <span id="btnText">🔒 Place Order &amp; Generate License</span>
+    </button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-header" id="resultHeader">
+      <div class="result-icon" id="resultIcon"></div>
+      <div>
+        <div class="result-title" id="resultTitle"></div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace;" id="resultSub"></div>
+      </div>
+    </div>
+    <div class="result-body" id="resultBody"></div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKER_URL = 'https://threatdown-portal.threatdown-portal.workers.dev';
+
+// ThreatDown OneView v3 uses bundle + deviceType instead of catalog codes
+const PRODUCTS = [
+  { name: 'Endpoint Protection',          desc: 'Workstations & laptops', bundle: 'core', deviceType: 'workstation' },
+  { name: 'Endpoint Protection for Servers', desc: 'Windows & Linux servers', bundle: 'core', deviceType: 'server' },
+];
+
+let selectedBundle     = PRODUCTS[0].bundle;
+let selectedDeviceType = PRODUCTS[0].deviceType;
+let selectedOS = 'windows';
+
+const grid = document.getElementById('productGrid');
+PRODUCTS.forEach((p, i) => {
+  const card = document.createElement('div');
+  card.className = 'product-card' + (i === 0 ? ' selected' : '');
+  card.innerHTML = `<div class="product-check">${i===0?'✓':''}</div><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div><div class="product-code">${p.code}</div>`;
+  card.onclick = () => {
+    selectedBundle = p.bundle;
+    selectedDeviceType = p.deviceType;
+    document.querySelectorAll('.product-card').forEach(c => { c.classList.remove('selected'); c.querySelector('.product-check').textContent = ''; });
+    card.classList.add('selected'); card.querySelector('.product-check').textContent = '✓';
+  };
+  grid.appendChild(card);
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.stab').forEach((t,i) => t.classList.toggle('active', (tab==='product'&&i===0)||(tab==='os'&&i===1)));
+  document.getElementById('tab-product').classList.toggle('active', tab==='product');
+  document.getElementById('tab-os').classList.toggle('active', tab==='os');
+}
+
+function selectOS(os) {
+  selectedOS = os;
+  document.getElementById('os-windows').classList.toggle('selected', os==='windows');
+  document.getElementById('os-macos').classList.toggle('selected', os==='macos');
+}
+
+document.getElementById('startDate').value = new Date().toISOString().slice(0,10);
+
+function updateCost() {
+  const endpoints = parseInt(document.getElementById('endpoints').value) || 0;
+  const price = parseFloat(document.getElementById('pricePerEndpoint').value) || 0;
+  const total = (endpoints * price).toFixed(2);
+  document.getElementById('costSub').textContent = `${endpoints} endpoints × $${price.toFixed(2)}`;
+  document.getElementById('costTotal').textContent = `$${total}`;
+}
+
+async function checkHealth() {
+  const dot = document.getElementById('statusDot'), txt = document.getElementById('statusText');
+  dot.className = 'status-dot checking'; txt.textContent = 'Checking API…';
+  try {
+    const res = await fetch(`${WORKER_URL}/health`), data = await res.json();
+    if (data.ok) { dot.className = 'status-dot ok'; txt.textContent = 'API connected ✓'; }
+    else throw new Error(data.error);
+  } catch { dot.className = 'status-dot err'; txt.textContent = 'API error — check Worker'; }
+}
+checkHealth();
+
+function toast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function copyToClipboard(text, label) { navigator.clipboard.writeText(text).then(() => toast(`✓ Copied ${label}`)); }
+
+function setLoading(on) {
+  document.getElementById('submitBtn').disabled = on;
+  document.getElementById('spinner').style.display = on ? 'block' : 'none';
+  document.getElementById('btnText').textContent = on ? 'Processing…' : '🔒 Place Order & Generate License';
+}
+
+function addLog(msg, type='info') {
+  const area = document.getElementById('logArea'); if(!area) return;
+  const line = document.createElement('div'); line.className = 'log-line';
+  line.innerHTML = `<span class="ts">[${new Date().toLocaleTimeString()}]</span><span class="${type}">${msg}</span>`;
+  area.appendChild(line); area.scrollTop = area.scrollHeight;
+}
+
+function showResult(success, title, sub, bodyHTML) {
+  const panel = document.getElementById('resultPanel'); panel.classList.add('visible');
+  document.getElementById('resultHeader').className = 'result-header ' + (success ? 'success' : 'error');
+  document.getElementById('resultIcon').textContent = success ? '✓' : '✗';
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  document.getElementById('resultBody').innerHTML = bodyHTML;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function placeOrder() {
+  const siteName     = document.getElementById('siteName').value.trim();
+  const contactName  = document.getElementById('contactName').value.trim();
+  const contactEmail = document.getElementById('contactEmail').value.trim();
+  const contactPhone = document.getElementById('contactPhone').value.trim();
+  const nerdName     = document.getElementById('nerdName').value.trim();
+  const nerdEmail    = document.getElementById('nerdEmail').value.trim();
+  const endpoints    = parseInt(document.getElementById('endpoints').value, 10);
+  const pricePerEP   = parseFloat(document.getElementById('pricePerEndpoint').value);
+  const startDate    = document.getElementById('startDate').value;
+  const poNumber     = document.getElementById('poNumber').value.trim();
+
+  if (!siteName || !contactEmail) return showResult(false,'Missing Fields','','<p class="error-msg">Site name and contact email are required.</p>');
+  if (!startDate) return showResult(false,'Missing Date','','<p class="error-msg">Please select a start date.</p>');
+
+  const totalCost = (endpoints * pricePerEP).toFixed(2);
+  setLoading(true);
+  showResult(true,'Processing Order…','Contacting Cloudflare Worker…','<div class="log-area" id="logArea"></div>');
+  addLog('Sending order to Cloudflare Worker…');
+
+  try {
+    const res = await fetch(`${WORKER_URL}/order`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ siteName, contactName, contactEmail, contactPhone, nerdName, nerdEmail, bundle: selectedBundle, deviceType: selectedDeviceType, osType: selectedOS, endpoints, pricePerEndpoint: pricePerEP, startDate, poNumber }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error + (data.details ? '\n\n' + JSON.stringify(data.details,null,2) : ''));
+
+    addLog('✓ Site created', 'ok');
+    addLog('✓ Subscription generated', 'ok');
+    addLog('✓ Installer link ready', 'ok');
+
+    const productLabel = PRODUCTS.find(p => p.bundle === data.bundle && p.deviceType === data.deviceType)?.name || data.bundle;
+    const osTag = data.osType === 'windows'
+      ? '<span class="tag-win">WINDOWS</span>'
+      : '<span class="tag-mac">MACOS</span>';
+    const dlExt = data.osType === 'windows' ? '.exe' : '.pkg';
+    const dlLabel = data.osType === 'windows' ? 'Windows Installer (.exe)' : 'macOS Installer (.pkg)';
+
+    setTimeout(() => {
+      showResult(true,'Order Confirmed — License Ready',`${data.siteName} · ${data.endpoints} endpoints · $${data.totalCost}`,`
+        <table class="license-table">
+          <tr><td>Company</td><td>${data.siteName}</td></tr>
+          <tr><td>Contact</td><td>${data.contactName} — ${data.contactEmail}</td></tr>
+          ${data.nerdName ? `<tr><td>Primary Nerd</td><td>${data.nerdName}${data.nerdEmail?' — '+data.nerdEmail:''}</td></tr>` : ''}
+          <tr><td>Product</td><td>${productLabel}</td></tr>
+          <tr><td>OS Type</td><td>${osTag}</td></tr>
+          <tr><td>Endpoints</td><td>${data.endpoints}</td></tr>
+          <tr><td>Price / Endpoint</td><td>$${parseFloat(data.pricePerEndpoint).toFixed(2)}</td></tr>
+          <tr><td>Total Cost</td><td class="total-cost">$${data.totalCost}</td></tr>
+          <tr><td>Start Date</td><td>${data.startDate}</td></tr>
+          ${data.poNumber ? `<tr><td>Reference #</td><td>${data.poNumber}</td></tr>` : ''}
+          <tr><td>Status</td><td><span class="tag-success">ACTIVE</span></td></tr>
+        </table>
+        <a class="btn-download" href="${data.installerUrl || '#'}" ${data.installerUrl ? 'target="_blank"' : ''}>
+          ⬇ Download ${dlLabel}
+        </a>
+      `);
+    }, 400);
+
+  } catch(err) {
+    addLog('✗ ' + err.message.split('\n')[0], 'err');
+    setTimeout(() => showResult(false,'Order Failed','',`<p class="error-msg">${err.message}</p>`), 300);
+  } finally { setLoading(false); }
+}
+</script>
+</body>
+</html>
