@@ -101,6 +101,16 @@ select option{background:var(--surface2)}
 .td-cost{color:var(--muted) !important}
 .td-client{color:var(--success) !important;font-weight:700}
 .td-total{color:var(--accent) !important;font-weight:700;font-size:0.92rem !important}
+.field-error input,.field-error select,.field-error .prefix-wrap{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(255,79,107,0.12)!important}
+.field-error label{color:var(--danger)!important}
+.field-hint{font-size:0.65rem;font-family:'DM Mono',monospace;margin-top:4px;color:var(--danger);display:none}
+.field-error .field-hint{display:block}
+.validation-banner{background:rgba(255,79,107,0.08);border:1px solid rgba(255,79,107,0.3);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:none}
+.validation-banner.visible{display:block}
+.validation-banner p{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--danger);margin-bottom:6px;font-weight:700}
+.validation-banner ul{list-style:none;padding:0;margin:0}
+.validation-banner ul li{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--danger);padding:2px 0}
+.validation-banner ul li::before{content:'→ ';opacity:0.7}
 .error-msg{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--danger);background:rgba(255,79,107,0.06);border:1px solid rgba(255,79,107,0.2);border-radius:8px;padding:14px 16px;white-space:pre-wrap;word-break:break-word}
 .log-area{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);margin-top:16px;line-height:1.8;max-height:160px;overflow-y:auto}
 .log-line{display:flex;gap:10px}
@@ -139,11 +149,11 @@ select option{background:var(--surface2)}
   <div class="card">
     <div class="card-title">Customer Details</div>
     <div class="form-row">
-      <div class="field"><label>Site / Company Name</label><input type="text" id="siteName" placeholder="Acme Corp"/></div>
+      <div class="field"><label>Site / Company Name</label><input type="text" id="siteName" placeholder="Acme Corp" oninput="clearError('siteName')"/><span class="field-hint">Company name is required</span></div>
       <div class="field"><label>Contact Name</label><input type="text" id="contactName" placeholder="John Doe"/></div>
     </div>
     <div class="form-row">
-      <div class="field"><label>Client Email</label><input type="email" id="contactEmail" placeholder="john@acme.com"/></div>
+      <div class="field"><label>Client Email</label><input type="email" id="contactEmail" placeholder="john@acme.com" oninput="clearError('contactEmail')"/><span class="field-hint">Valid email address is required</span></div>
       <div class="field"><label>Phone (optional)</label><input type="text" id="contactPhone" placeholder="+1 555 000 0000"/></div>
     </div>
     <div class="form-row">
@@ -178,7 +188,7 @@ select option{background:var(--surface2)}
     <div class="form-row three">
       <div class="field">
         <label>Number of Workstation Endpoints</label>
-        <input type="number" id="wsEndpoints" value="0" min="0" oninput="updateCosts()"/>
+        <input type="number" id="wsEndpoints" value="0" min="0" oninput="updateCosts();clearEndpointError()"/>
       </div>
       <div class="field">
         <label>Your Price per Workstation ($)</label>
@@ -195,7 +205,7 @@ select option{background:var(--surface2)}
     <div class="form-row three">
       <div class="field">
         <label>Number of Server Endpoints</label>
-        <input type="number" id="serEndpoints" value="0" min="0" oninput="updateCosts()"/>
+        <input type="number" id="serEndpoints" value="0" min="0" oninput="updateCosts();clearEndpointError()"/>
       </div>
       <div class="field">
         <label>Your Price per Server ($)</label>
@@ -207,12 +217,7 @@ select option{background:var(--surface2)}
       </div>
     </div>
 
-    <!-- Other -->
-    <div class="section-label">Order Details</div>
-    <div class="form-row">
-      <div class="field"><label>Start Date</label><input type="date" id="startDate"/></div>
-      <div class="field"><label>PO / Reference # (optional)</label><input type="text" id="poNumber" placeholder="PO-2024-001"/></div>
-    </div>
+
 
     <!-- Cost Summary -->
     <div class="cost-summary" id="costSummary">
@@ -238,6 +243,10 @@ select option{background:var(--surface2)}
       </div>
     </div>
 
+    <div class="validation-banner" id="validationBanner">
+      <p>⚠ Please fix the following before submitting:</p>
+      <ul id="validationList"></ul>
+    </div>
     <hr class="divider"/>
     <button class="btn btn-primary" id="submitBtn" onclick="placeOrder()">
       <span class="spinner" id="spinner"></span>
@@ -265,7 +274,6 @@ const WORKER_URL = 'https://threatdown-portal.threatdown-portal.workers.dev';
 
 let selectedOS = 'windows';
 
-document.getElementById('startDate').value = new Date().toISOString().slice(0,10);
 
 function selectOS(os) {
   selectedOS = os;
@@ -291,6 +299,27 @@ function updateCosts() {
 }
 
 updateCosts();
+
+function markError(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (field) field.closest('.field').classList.add('field-error');
+}
+
+function clearError(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (field) field.closest('.field').classList.remove('field-error');
+  document.getElementById('validationBanner')?.classList.remove('visible');
+}
+
+function clearEndpointError() {
+  clearError('wsEndpoints');
+  clearError('serEndpoints');
+}
+
+function clearAllErrors() {
+  document.querySelectorAll('.field-error').forEach(f => f.classList.remove('field-error'));
+  document.getElementById('validationBanner')?.classList.remove('visible');
+}
 
 async function checkHealth() {
   const dot = document.getElementById('statusDot'), txt = document.getElementById('statusText');
@@ -348,15 +377,33 @@ async function placeOrder() {
   const wsClientPrice= Number(document.getElementById('wsClientPrice').value) || 0;
   const serCostPrice = Number(document.getElementById('serCostPrice').value)  || 0;
   const serClientPrice=Number(document.getElementById('serClientPrice').value)|| 0;
-  const startDate    = document.getElementById('startDate').value;
-  const poNumber     = document.getElementById('poNumber').value.trim();
 
-  if (!siteName || !contactEmail)
-    return showResult(false,'Missing Fields','','<p class="error-msg">Site name and client email are required.</p>');
-  if (wsEndpoints === 0 && serEndpoints === 0)
-    return showResult(false,'No Endpoints','','<p class="error-msg">Please enter at least one workstation or server endpoint.</p>');
-  if (!startDate)
-    return showResult(false,'Missing Date','','<p class="error-msg">Please select a start date.</p>');
+  // Clear previous errors
+  clearAllErrors();
+  const errors = [];
+
+  // Validate each required field
+  if (!siteName) {
+    markError('siteName'); errors.push('Company / Site Name is required');
+  }
+  if (!contactEmail) {
+    markError('contactEmail'); errors.push('Client Email is required');
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+    markError('contactEmail'); errors.push('Client Email must be a valid email address');
+  }
+  if (wsEndpoints === 0 && serEndpoints === 0) {
+    markError('wsEndpoints'); markError('serEndpoints');
+    errors.push('At least one Workstation or Server endpoint must be greater than 0');
+  }
+
+  if (errors.length > 0) {
+    const banner = document.getElementById('validationBanner');
+    const list   = document.getElementById('validationList');
+    list.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
+    banner.classList.add('visible');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
 
   setLoading(true);
   showResult(true,'Processing Order…','Contacting API…','<div class="log-area" id="logArea"></div>');
@@ -371,7 +418,7 @@ async function placeOrder() {
         wsEndpoints, serEndpoints,
         wsCostPrice, wsClientPrice,
         serCostPrice, serClientPrice,
-        startDate, poNumber,
+        startDate: new Date().toISOString().slice(0,10),
       }),
     });
     const data = await res.json();
@@ -392,7 +439,6 @@ async function placeOrder() {
           ${data.nerdName ? `<tr><td>Primary Nerd</td><td>${data.nerdName}${data.nerdEmail ? ' — '+data.nerdEmail : ''}</td></tr>` : ''}
           <tr><td>OS Version</td><td>${osTag}</td></tr>
           <tr><td>Start Date</td><td>${data.startDate}</td></tr>
-          ${data.poNumber ? `<tr><td>Reference #</td><td>${data.poNumber}</td></tr>` : ''}
           <tr><td>Status</td><td><span class="tag-success">ACTIVE</span></td></tr>
           ${data.wsEndpoints > 0 ? `
           <tr><td>WS Endpoints</td><td>${data.wsEndpoints}</td></tr>
