@@ -105,6 +105,8 @@ select option{background:var(--surface2)}
 .field-error label{color:var(--danger)!important}
 .field-hint{font-size:0.65rem;font-family:'DM Mono',monospace;margin-top:4px;color:var(--danger);display:none}
 .field-error .field-hint{display:block}
+.field-hint-id{color:var(--muted)}
+.field-error .field-hint-id{color:var(--danger)}
 .validation-banner{background:rgba(255,79,107,0.08);border:1px solid rgba(255,79,107,0.3);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:none}
 .validation-banner.visible{display:block}
 .validation-banner p{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--danger);margin-bottom:6px;font-weight:700}
@@ -117,39 +119,30 @@ select option{background:var(--surface2)}
 .log-line .ts{color:var(--accent2);opacity:0.7}
 .log-line .ok{color:var(--success)}
 .log-line .err{color:var(--danger)}
-.log-line .info{color:var(--accent)}
-.toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.4);transform:translateY(80px);opacity:0;transition:all 0.3s ease;z-index:999}
-.toast.show{transform:translateY(0);opacity:1}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-<div class="glow2"></div>
-<div class="container">
 
+<div class="container">
+  <!-- Header -->
   <div class="header">
     <div class="logo-badge">🛡️</div>
     <div class="header-text">
       <h1>ThreatDown License Portal</h1>
-      <p>OneView API — Order &amp; License Generation</p>
+      <p>OneView API · Order Generation · Site Provisioning</p>
     </div>
   </div>
 
   <div class="meta-row">
-    <div class="status-pill" onclick="checkHealth()" title="Click to recheck">
-      <div class="status-dot checking" id="statusDot"></div>
-      <span id="statusText">Checking API…</span>
-    </div>
-    <div class="secure-badge">🔒 Credentials secured via Cloudflare</div>
+    <div class="status-pill"><div class="status-dot" id="statusDot"></div><span id="statusText">Checking API…</span></div>
+    <div class="secure-badge">🔒 End-to-End Encrypted</div>
   </div>
 
   <!-- Customer Details -->
   <div class="card">
     <div class="card-title">Customer Details</div>
     <div class="form-row">
-      <div class="field"><label>Site / Company Name</label><input type="text" id="siteName" placeholder="Acme Corp" oninput="clearError('siteName')"/><span class="field-hint">Company name is required</span></div>
+      <div class="field"><label>Site / Company Name + Client ID</label><input type="text" id="siteName" placeholder="Francis Diamano CA371069" pattern="^.+?\s+(CA|CO)\d{6,7}$" oninput="clearError('siteName')"/><span class="field-hint">Format: <b>Company Name</b> + space + <b>CA</b> or <b>CO</b> + 6–7 digits · e.g. <b>Francis Diamano CA371069</b></span></div>
       <div class="field"><label>Contact Name</label><input type="text" id="contactName" placeholder="John Doe"/></div>
     </div>
     <div class="form-row">
@@ -179,7 +172,7 @@ select option{background:var(--surface2)}
     </div>
   </div>
 
-  <!-- Endpoints & Pricing (mirrors IamaNerd form) -->
+  <!-- Endpoints & Pricing -->
   <div class="card">
     <div class="card-title">Endpoints &amp; Pricing</div>
 
@@ -274,6 +267,20 @@ const WORKER_URL = 'https://threatdown-portal.threatdown-portal.workers.dev';
 
 let selectedOS = 'windows';
 
+/* Parse "Company Name CA123456" / "Company Name CO123456" into pieces.
+   Returns { company, clientId, ok, error }. */
+function parseSiteName(input) {
+  const trimmed = (input || '').trim();
+  if (!trimmed) return { ok: false, error: 'Company / Site Name is required' };
+  const m = trimmed.match(/^(.+?)\s+(CA|CO)(\d{6,7})$/);
+  if (!m) {
+    return {
+      ok: false,
+      error: 'Format must be: <b>Company Name</b> + space + <b>CA</b> or <b>CO</b> + 6–7 digits · e.g. <b>Francis Diamano CA371069</b>'
+    };
+  }
+  return { ok: true, company: m[1].trim(), clientId: m[2] + m[3] };
+}
 
 function selectOS(os) {
   selectedOS = os;
@@ -365,7 +372,10 @@ function showResult(success, title, sub, bodyHTML) {
 }
 
 async function placeOrder() {
-  const siteName     = document.getElementById('siteName').value.trim();
+  const siteNameInput = document.getElementById('siteName').value.trim();
+  const parsed = parseSiteName(siteNameInput);
+  const siteName     = parsed.company;        // clean company name → ThreatDown
+  const clientId     = parsed.clientId || null;
   const contactName  = document.getElementById('contactName').value.trim();
   const contactEmail = document.getElementById('contactEmail').value.trim();
   const contactPhone = document.getElementById('contactPhone').value.trim();
@@ -382,10 +392,12 @@ async function placeOrder() {
   clearAllErrors();
   const errors = [];
 
-  // Validate each required field
-  if (!siteName) {
-    markError('siteName'); errors.push('Company / Site Name is required');
+  // Validate site name with the strict CA/CO format
+  if (!parsed.ok) {
+    markError('siteName');
+    errors.push(parsed.error);
   }
+
   if (!contactEmail) {
     markError('contactEmail'); errors.push('Client Email is required');
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
@@ -419,7 +431,7 @@ async function placeOrder() {
     const res = await fetch(`${WORKER_URL}/order`, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        siteName, contactName, contactEmail, contactPhone,
+        siteName, clientId, contactName, contactEmail, contactPhone,
         nerdName, nerdEmail, osType: selectedOS,
         wsEndpoints, serEndpoints,
         wsCostPrice, wsClientPrice,
@@ -438,9 +450,10 @@ async function placeOrder() {
 
     setTimeout(() => {
       showResult(true,'Order Confirmed — License Ready',
-        `${data.siteName} · ${(data.wsEndpoints||0)+(data.serEndpoints||0)} total endpoints`,
+        `${data.siteName}${clientId ? ' ['+clientId+']' : ''} · ${(data.wsEndpoints||0)+(data.serEndpoints||0)} total endpoints`,
         `<table class="lt">
           <tr><td>Company</td><td>${data.siteName}</td></tr>
+          ${clientId ? `<tr><td>Client ID</td><td><code>${clientId}</code></td></tr>` : ''}
           <tr><td>Contact</td><td>${data.contactName || ''} — ${data.contactEmail}</td></tr>
           ${data.nerdName ? `<tr><td>Primary Nerd</td><td>${data.nerdName}${data.nerdEmail ? ' — '+data.nerdEmail : ''}</td></tr>` : ''}
           <tr><td>OS Version</td><td>${osTag}</td></tr>
