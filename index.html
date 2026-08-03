@@ -406,9 +406,6 @@ async function placeOrder() {
   if (nerdEmail && !nerdEmail.toLowerCase().endsWith('@nerdsonsite.com')) {
     markError('nerdEmail'); errors.push('Nerd Email must be a @nerdsonsite.com address');
   }
-  if (nerdName && !nerdEmail) {
-    markError('nerdEmail'); errors.push('Nerd Email is required when a Primary Nerd name is entered');
-  }
   if (wsEndpoints === 0 && serEndpoints === 0) {
     markError('wsEndpoints'); markError('serEndpoints');
     errors.push('At least one Workstation or Server endpoint must be greater than 0');
