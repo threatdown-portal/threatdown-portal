@@ -44,9 +44,7 @@ select option{background:var(--surface2)}
 .prefix-wrap .pfx{padding:10px 10px 10px 14px;color:var(--muted);font-family:'DM Mono',monospace;font-size:0.85rem;border-right:1px solid var(--border)}
 .prefix-wrap input{border:none;border-radius:0;box-shadow:none}
 .prefix-wrap input:focus{box-shadow:none}
-/* Section divider inside card */
 .section-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);font-family:'DM Mono',monospace;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-/* OS toggle */
 .os-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .os-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px}
 .os-card:hover{border-color:rgba(0,194,255,0.3)}
@@ -56,7 +54,6 @@ select option{background:var(--surface2)}
 .os-sub{font-size:0.68rem;color:var(--muted);margin-top:2px}
 .os-radio{width:14px;height:14px;border-radius:50%;border:1px solid var(--border);margin-left:auto;flex-shrink:0;transition:all 0.2s}
 .os-card.selected .os-radio{background:var(--accent);border-color:var(--accent)}
-/* Cost summary box */
 .cost-summary{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-top:4px}
 .cost-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.82rem}
 .cost-row:last-child{border-bottom:none;padding-top:10px;margin-top:4px}
@@ -65,9 +62,7 @@ select option{background:var(--surface2)}
 .cost-row.total .cost-key{color:var(--text);font-weight:700;font-size:0.88rem}
 .cost-row.total .cost-val{color:var(--accent);font-weight:700;font-size:1.1rem}
 .cost-row.client .cost-val{color:var(--success)}
-/* Divider */
 .divider{border:none;border-top:1px solid var(--border);margin:20px 0}
-/* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 32px;border-radius:10px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.02em;transition:all 0.2s}
 .btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;width:100%;box-shadow:0 4px 20px rgba(0,194,255,0.25)}
 .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 30px rgba(0,194,255,0.35)}
@@ -76,7 +71,6 @@ select option{background:var(--surface2)}
 .btn-sm{padding:6px 12px;font-size:0.72rem;background:var(--surface2);color:var(--label);border:1px solid var(--border);border-radius:6px;white-space:nowrap}
 .btn-sm:hover{border-color:var(--accent);color:var(--accent)}
 .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;display:none}
-/* Result */
 .result-panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeUp 0.4s ease both;margin-top:20px}
 .result-panel.visible{display:block}
 .result-header{padding:18px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
@@ -105,8 +99,6 @@ select option{background:var(--surface2)}
 .field-error label{color:var(--danger)!important}
 .field-hint{font-size:0.65rem;font-family:'DM Mono',monospace;margin-top:4px;color:var(--danger);display:none}
 .field-error .field-hint{display:block}
-.field-hint-id{color:var(--muted)}
-.field-error .field-hint-id{color:var(--danger)}
 .validation-banner{background:rgba(255,79,107,0.08);border:1px solid rgba(255,79,107,0.3);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:none}
 .validation-banner.visible{display:block}
 .validation-banner p{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--danger);margin-bottom:6px;font-weight:700}
@@ -119,39 +111,47 @@ select option{background:var(--surface2)}
 .log-line .ts{color:var(--accent2);opacity:0.7}
 .log-line .ok{color:var(--success)}
 .log-line .err{color:var(--danger)}
+.log-line .info{color:var(--accent)}
+.toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.4);transform:translateY(80px);opacity:0;transition:all 0.3s ease;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
-
+<div class="glow2"></div>
 <div class="container">
-  <!-- Header -->
+
   <div class="header">
     <div class="logo-badge">🛡️</div>
     <div class="header-text">
       <h1>ThreatDown License Portal</h1>
-      <p>OneView API · Order Generation · Site Provisioning</p>
+      <p>OneView API — Order &amp; License Generation</p>
     </div>
   </div>
 
   <div class="meta-row">
-    <div class="status-pill"><div class="status-dot" id="statusDot"></div><span id="statusText">Checking API…</span></div>
-    <div class="secure-badge">🔒 End-to-End Encrypted</div>
+    <div class="status-pill" onclick="checkHealth()" title="Click to recheck">
+      <div class="status-dot checking" id="statusDot"></div>
+      <span id="statusText">Checking API…</span>
+    </div>
+    <div class="secure-badge">🔒 Credentials secured via Cloudflare</div>
   </div>
 
   <!-- Customer Details -->
   <div class="card">
     <div class="card-title">Customer Details</div>
     <div class="form-row">
-      <div class="field"><label>Site / Company Name + Client ID</label><input type="text" id="siteName" placeholder="Francis Diamano CA371069" pattern="^.+?\s+(CA|CO)\d{6,7}$" oninput="clearError('siteName')"/><span class="field-hint">Format: <b>Company Name</b> + space + <b>CA</b> or <b>CO</b> + 6–7 digits · e.g. <b>Francis Diamano CA371069</b></span></div>
+      <div class="field"><label>Site / Company Name</label><input type="text" id="siteName" placeholder="Acme Corp" oninput="clearError('siteName')"/><span class="field-hint">Company name is required</span></div>
       <div class="field"><label>Contact Name</label><input type="text" id="contactName" placeholder="John Doe"/></div>
     </div>
     <div class="form-row">
       <div class="field"><label>Client Email</label><input type="email" id="contactEmail" placeholder="john@acme.com" oninput="clearError('contactEmail')"/><span class="field-hint">Valid email address is required</span></div>
       <div class="field"><label>Phone (optional)</label><input type="text" id="contactPhone" placeholder="+1 555 000 0000"/></div>
     </div>
-    <div class="form-row">
-      <div class="field"><label>Primary Nerd on the Account</label><input type="text" id="nerdName" placeholder="Jane Smith"/></div>
-      <div class="field"><label>Nerd Email <span style="color:var(--accent);font-size:0.6rem">(must be @nerdsonsite.com)</span></label><input type="email" id="nerdEmail" placeholder="jane@nerdsonsite.com" oninput="clearError('nerdEmail')"/><span class="field-hint">Must be a @nerdsonsite.com email address</span></div>
+    <div class="form-row full">
+      <div class="field"><label>Nerd Email on the Account <span style="color:var(--accent);font-size:0.6rem">(must be @nerdsonsite.com · name pulled from ThreatDown automatically)</span></label><input type="email" id="nerdEmail" placeholder="jane@nerdsonsite.com" oninput="clearError('nerdEmail')"/><span class="field-hint">Must be a @nerdsonsite.com email — we look up the name in ThreatDown automatically</span></div>
     </div>
   </div>
 
@@ -176,7 +176,6 @@ select option{background:var(--surface2)}
   <div class="card">
     <div class="card-title">Endpoints &amp; Pricing</div>
 
-    <!-- Workstation section -->
     <div class="section-label">Workstation Endpoints</div>
     <div class="form-row three">
       <div class="field">
@@ -193,7 +192,6 @@ select option{background:var(--surface2)}
       </div>
     </div>
 
-    <!-- Server section -->
     <div class="section-label">Server Endpoints</div>
     <div class="form-row three">
       <div class="field">
@@ -210,9 +208,6 @@ select option{background:var(--surface2)}
       </div>
     </div>
 
-
-
-    <!-- Cost Summary -->
     <div class="cost-summary" id="costSummary">
       <div class="cost-row">
         <span class="cost-key">Workstation cost (your price)</span>
@@ -266,21 +261,6 @@ select option{background:var(--surface2)}
 const WORKER_URL = 'https://threatdown-portal.threatdown-portal.workers.dev';
 
 let selectedOS = 'windows';
-
-/* Parse "Company Name CA123456" / "Company Name CO123456" into pieces.
-   Returns { company, clientId, ok, error }. */
-function parseSiteName(input) {
-  const trimmed = (input || '').trim();
-  if (!trimmed) return { ok: false, error: 'Company / Site Name is required' };
-  const m = trimmed.match(/^(.+?)\s+(CA|CO)(\d{6,7})$/);
-  if (!m) {
-    return {
-      ok: false,
-      error: 'Format must be: <b>Company Name</b> + space + <b>CA</b> or <b>CO</b> + 6–7 digits · e.g. <b>Francis Diamano CA371069</b>'
-    };
-  }
-  return { ok: true, company: m[1].trim(), clientId: m[2] + m[3] };
-}
 
 function selectOS(os) {
   selectedOS = os;
@@ -368,120 +348,4 @@ function showResult(success, title, sub, bodyHTML) {
   document.getElementById('resultTitle').textContent = title;
   document.getElementById('resultSub').textContent   = sub;
   document.getElementById('resultBody').innerHTML    = bodyHTML;
-  panel.scrollIntoView({ behavior:'smooth', block:'start' });
-}
-
-async function placeOrder() {
-  const siteNameInput = document.getElementById('siteName').value.trim();
-  const parsed = parseSiteName(siteNameInput);
-  const siteName     = parsed.company;        // clean company name → ThreatDown
-  const clientId     = parsed.clientId || null;
-  const contactName  = document.getElementById('contactName').value.trim();
-  const contactEmail = document.getElementById('contactEmail').value.trim();
-  const contactPhone = document.getElementById('contactPhone').value.trim();
-  const nerdName     = document.getElementById('nerdName').value.trim();
-  const nerdEmail    = document.getElementById('nerdEmail').value.trim();
-  const wsEndpoints  = Number(document.getElementById('wsEndpoints').value)   || 0;
-  const serEndpoints = Number(document.getElementById('serEndpoints').value)  || 0;
-  const wsCostPrice  = Number(document.getElementById('wsCostPrice').value)   || 0;
-  const wsClientPrice= Number(document.getElementById('wsClientPrice').value) || 0;
-  const serCostPrice = Number(document.getElementById('serCostPrice').value)  || 0;
-  const serClientPrice=Number(document.getElementById('serClientPrice').value)|| 0;
-
-  // Clear previous errors
-  clearAllErrors();
-  const errors = [];
-
-  // Validate site name with the strict CA/CO format
-  if (!parsed.ok) {
-    markError('siteName');
-    errors.push(parsed.error);
-  }
-
-  if (!contactEmail) {
-    markError('contactEmail'); errors.push('Client Email is required');
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
-    markError('contactEmail'); errors.push('Client Email must be a valid email address');
-  }
-  if (nerdEmail && !nerdEmail.toLowerCase().endsWith('@nerdsonsite.com')) {
-    markError('nerdEmail'); errors.push('Nerd Email must be a @nerdsonsite.com address');
-  }
-  if (nerdName && !nerdEmail) {
-    markError('nerdEmail'); errors.push('Nerd Email is required when a Primary Nerd name is entered');
-  }
-  if (wsEndpoints === 0 && serEndpoints === 0) {
-    markError('wsEndpoints'); markError('serEndpoints');
-    errors.push('At least one Workstation or Server endpoint must be greater than 0');
-  }
-
-  if (errors.length > 0) {
-    const banner = document.getElementById('validationBanner');
-    const list   = document.getElementById('validationList');
-    list.innerHTML = errors.map(e => `<li>${e}</li>`).join('');
-    banner.classList.add('visible');
-    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-
-  setLoading(true);
-  showResult(true,'Processing Order…','Contacting API…','<div class="log-area" id="logArea"></div>');
-  addLog('Sending order to Cloudflare Worker…');
-
-  try {
-    const res = await fetch(`${WORKER_URL}/order`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        siteName, clientId, contactName, contactEmail, contactPhone,
-        nerdName, nerdEmail, osType: selectedOS,
-        wsEndpoints, serEndpoints,
-        wsCostPrice, wsClientPrice,
-        serCostPrice, serClientPrice,
-        startDate: new Date().toISOString().slice(0,10),
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.error + (data.details ? '\n\n' + JSON.stringify(data.details,null,2) : ''));
-
-    addLog('✓ Site created', 'ok');
-    addLog('✓ Subscription generated', 'ok');
-
-    const osTag = data.osType === 'macos' ? '<span class="tag-mac">MACOS</span>' : '<span class="tag-win">WINDOWS</span>';
-    const dlExt = data.osType === 'macos' ? 'macOS Installer (.pkg)' : 'Windows Installer (.exe)';
-
-    setTimeout(() => {
-      showResult(true,'Order Confirmed — License Ready',
-        `${data.siteName}${clientId ? ' ['+clientId+']' : ''} · ${(data.wsEndpoints||0)+(data.serEndpoints||0)} total endpoints`,
-        `<table class="lt">
-          <tr><td>Company</td><td>${data.siteName}</td></tr>
-          ${clientId ? `<tr><td>Client ID</td><td><code>${clientId}</code></td></tr>` : ''}
-          <tr><td>Contact</td><td>${data.contactName || ''} — ${data.contactEmail}</td></tr>
-          ${data.nerdName ? `<tr><td>Primary Nerd</td><td>${data.nerdName}${data.nerdEmail ? ' — '+data.nerdEmail : ''}</td></tr>` : ''}
-          <tr><td>OS Version</td><td>${osTag}</td></tr>
-          <tr><td>Start Date</td><td>${data.startDate}</td></tr>
-          <tr><td>Status</td><td><span class="tag-success">ACTIVE</span></td></tr>
-          ${data.wsEndpoints > 0 ? `
-          <tr><td>WS Endpoints</td><td>${data.wsEndpoints}</td></tr>
-          <tr><td>WS Your Price</td><td class="td-cost">$${Number(data.wsCostPrice).toFixed(2)} / endpoint = $${(data.wsEndpoints*data.wsCostPrice).toFixed(2)}</td></tr>
-          <tr><td>WS Client Price</td><td class="td-client">$${Number(data.wsClientPrice).toFixed(2)} / endpoint = $${(data.wsEndpoints*data.wsClientPrice).toFixed(2)}</td></tr>
-          ` : ''}
-          ${data.serEndpoints > 0 ? `
-          <tr><td>Server Endpoints</td><td>${data.serEndpoints}</td></tr>
-          <tr><td>Server Your Price</td><td class="td-cost">$${Number(data.serCostPrice).toFixed(2)} / endpoint = $${(data.serEndpoints*data.serCostPrice).toFixed(2)}</td></tr>
-          <tr><td>Server Client Price</td><td class="td-client">$${Number(data.serClientPrice).toFixed(2)} / endpoint = $${(data.serEndpoints*data.serClientPrice).toFixed(2)}</td></tr>
-          ` : ''}
-          <tr><td>Total to Bill Client</td><td class="td-total">$${data.totalClientCost}</td></tr>
-          <tr><td>Your Total Cost</td><td class="td-cost">$${data.totalCostPrice}</td></tr>
-        </table>
-        ${data.installerUrl ? `<a class="btn-download" href="${data.installerUrl}" target="_blank">⬇ Download ${dlExt}</a>` : ''}
-        `
-      );
-    }, 400);
-
-  } catch(err) {
-    addLog('✗ ' + err.message.split('\n')[0], 'err');
-    setTimeout(() => showResult(false,'Order Failed','',`<p class="error-msg">${err.message}</p>`), 300);
-  } finally { setLoading(false); }
-}
-</script>
-</body>
-</html>
+  panel.scrollIntoView(
