@@ -379,7 +379,7 @@ async function placeOrder() {
   const contactName  = document.getElementById('contactName').value.trim();
   const contactEmail = document.getElementById('contactEmail').value.trim();
   const contactPhone = document.getElementById('contactPhone').value.trim();
-  const nerdName     = document.getElementById('nerdName').value.trim();
+    // nerdName no longer collected on form — the server resolves it from nerdEmail via ThreatDown
   const nerdEmail    = document.getElementById('nerdEmail').value.trim();
   const wsEndpoints  = Number(document.getElementById('wsEndpoints').value)   || 0;
   const serEndpoints = Number(document.getElementById('serEndpoints').value)  || 0;
