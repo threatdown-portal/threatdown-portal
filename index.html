@@ -429,7 +429,7 @@ async function placeOrder() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         siteName, clientId, contactName, contactEmail, contactPhone,
-        nerdName, nerdEmail, osType: selectedOS,
+        nerdEmail, osType: selectedOS,
         wsEndpoints, serEndpoints,
         wsCostPrice, wsClientPrice,
         serCostPrice, serClientPrice,
